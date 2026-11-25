@@ -1,0 +1,33 @@
+hvl_bdt_node:
+  ros__parameters:
+    cloud_topic: /camera/camera/depth/color/points
+
+    # Frame the box is defined in and the ball position is published in.
+    # "" = camera optical frame (z forward, x right, y down).
+    # Set to base_link once the camera is in your robot's TF tree.
+    target_frame: ""
+
+    # Search box [x, y, z] in metres, in target_frame
+    box_min: [-0.30, -0.30, 0.20]
+    box_max: [ 0.30,  0.30, 1.20]
+
+    # HSV colour range. H in degrees 0-360, S and V 0-1.
+    # Orange ~ 15-40, yellow ~ 45-65, green ~ 80-160, blue ~ 190-250,
+    # red wraps around: h_min: 340.0, h_max: 15.0
+    h_min: 20.0
+    h_max: 45.0
+    s_min: 0.45
+    v_min: 0.25
+
+    voxel_size: 0.004          # m, 0 to disable
+    cluster_tolerance: 0.015   # m
+    min_cluster_size: 30
+    max_cluster_size: 50000
+
+    # Sphere fit gives the true centre (not the visible surface)
+    use_sphere_fit: true
+    radius_min: 0.02           # m, set around your real ball radius
+    radius_max: 0.05
+    sphere_distance_threshold: 0.004
+
+    publish_debug_cloud: true
