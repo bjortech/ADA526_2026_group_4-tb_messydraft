@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<robot name="hvl_manipulator" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:arg name="prefix" default="" />
+
+  <xacro:include filename="$(find hvl_manipulator_description)/urdf/hvl_manipulator/test.urdf.xacro" />
+
+  <link name="world"/>
+
+  <joint name="$(arg prefix)world_fixed" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <parent link="world"/>
+    <child link="$(arg prefix)link1"/>
+  </joint>
+
+  <xacro:hvl_manipulator prefix="$(arg prefix)"/>
+</robot>

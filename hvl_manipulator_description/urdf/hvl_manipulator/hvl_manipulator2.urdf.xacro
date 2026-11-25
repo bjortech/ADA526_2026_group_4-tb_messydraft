@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<robot name="hvl_manipulator" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:arg name="prefix" default="" />
+  <xacro:arg name="use_sim" default="false" />
+  <xacro:arg name="use_mock_hardware" default="false" />
+  <xacro:arg name="mock_sensor_commands" default="false" />
+  <xacro:arg name="port_name" default="/dev/ttyUSB0" />
+  <xacro:arg name="ros2_control_type" default="hvl_manipulator_position" />
+
+  <xacro:include filename="$(find hvl_manipulator_description)/gazebo/hvl_manipulator.gazebo.xacro" />
+        
+  <xacro:include filename="$(find hvl_manipulator_description)/urdf/hvl_manipulator/hvl_manipulator_arm2.urdf.xacro" />
+
+  <xacro:include filename="$(find hvl_manipulator_description)/ros2_control/$(arg ros2_control_type).ros2_control.xacro" />
+
+  <link name="world"/>
+  <link name="base_link"/>
+  <link name="$(arg prefix)camera_base"/>
+
+
+  <joint name="$(arg prefix)base_link_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <parent link="world"/>
+    <child link="$(arg prefix)base_link"/>
+  </joint>
+  <joint name="$(arg prefix)world_fixed" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <parent link="$(arg prefix)base_link"/>
+    <child link="$(arg prefix)link1"/>
+  </joint>
+    <joint name="$(arg prefix)camera_base_joint" type="fixed">
+    <origin xyz="0.125 0 0.085" rpy="0 0 0"/>
+    <parent link="$(arg prefix)base_link"/>
+    <child link="$(arg prefix)camera_base"/>
+  </joint>
+
+  <xacro:hvl_manipulator prefix="$(arg prefix)" />
+  <xacro:hvl_manipulator_gazebo prefix="$(arg prefix)" />
+
+  <xacro:hvl_manipulator_system
+    name="HVLManipulatorSystem" prefix="$(arg prefix)" use_sim="$(arg use_sim)"
+    use_mock_hardware="$(arg use_mock_hardware)"
+    mock_sensor_commands="$(arg mock_sensor_commands)"
+    port_name="$(arg port_name)"/>
+  <xacro:arg name="use_nominal_extrinsics" default="false" />
+  <xacro:include filename="$(find realsense2_description)/urdf/_d435i.urdf.xacro"/>
+
+  <xacro:sensor_d435i parent="$(arg prefix)camera_base" use_nominal_extrinsics="$(arg use_nominal_extrinsics)">
+    <origin xyz="0.0 0 0.0" rpy="0 0 0"/>
+  </xacro:sensor_d435i>
+
+  <gazebo>
+    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <parameters>$(find hvl_manipulator_bringup)/config/hvl_manipulator/hardware_controller_manager.yaml</parameters>
+    </plugin>
+  </gazebo>
+
+</robot>
